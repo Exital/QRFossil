@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>QRFossil</title>
+    <meta
+      name="description"
+      content="QR codes built to outlive their creator. Dynamic QR codes without a backend, database, or subscription."
+    />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://api.github.com; form-action 'none'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'"
+    />
+    <link rel="icon" href="app/mark.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="app/styles.css" />
+  </head>
+  <body>
+    <div class="atmosphere" aria-hidden="true"></div>
+    <div id="toast" class="toast" hidden></div>
+
+    <header class="hero">
+      <p id="site-name" class="site-name" hidden></p>
+      <h1 class="brand">QRFossil</h1>
+      <p class="tagline">QR codes built to outlive their creator.</p>
+      <p class="lede">
+        Fork the repo, enable GitHub Pages, and keep editable QR codes in a repository you own.
+      </p>
+      <div class="hero-actions">
+        <span id="mode-badge" class="badge">Read-only</span>
+        <button type="button" class="btn btn-ghost" id="enable-editing">Enable Editing</button>
+        <div id="github-status" class="github-status" hidden>
+          <span>GitHub</span>
+          <strong id="github-repo"></strong>
+          <span>Connected</span>
+          <button type="button" class="btn btn-ghost" id="forget-token">Forget Token</button>
+        </div>
+        <button type="button" class="btn btn-accent" id="create-qr">Create QR</button>
+      </div>
+    </header>
+
+    <p id="banner" class="banner" hidden></p>
+
+    <main>
+      <section id="setup-panel" class="setup" hidden>
+        <h2>Welcome to QRFossil</h2>
+        <p>Let’s set up your QR site. These values are inferred from this GitHub Pages URL.</p>
+        <div class="setup-grid">
+          <label>GitHub username <input id="setup-owner" autocomplete="off" /></label>
+          <label>Repository <input id="setup-repo" autocomplete="off" /></label>
+          <label>Site name <input id="setup-name" autocomplete="off" /></label>
+          <label class="wide">Site URL <input id="setup-url" autocomplete="off" /></label>
+        </div>
+        <ul id="setup-checks" class="checks"></ul>
+        <p id="pages-hint" class="hint" hidden>
+          GitHub Pages does not appear to be enabled. Open Repository → Settings → Pages and deploy from the
+          <strong>main</strong> branch, folder <strong>/</strong> (root).
+        </p>
+        <button type="button" class="btn btn-accent" id="setup-start">Start</button>
+      </section>
+
+      <section id="home">
+        <div class="toolbar">
+          <p id="link-count">0 Links</p>
+        </div>
+        <div id="link-list" class="link-list"></div>
+      </section>
+
+      <section id="editor" class="editor" hidden>
+        <div class="editor-copy">
+          <h2 id="editor-title">Create QR</h2>
+          <p>The printed code encodes a permanent QRFossil address. Change the destination later without reprinting.</p>
+        </div>
+        <div class="editor-layout">
+          <form class="editor-form" id="editor-form">
+            <label>Name <input id="field-name" maxlength="80" autocomplete="off" /></label>
+            <label>Slug <input id="field-slug" maxlength="64" autocomplete="off" spellcheck="false" /></label>
+            <label class="wide">Destination URL <input id="field-destination" autocomplete="off" spellcheck="false" /></label>
+            <p class="perm">
+              Permanent QR URL
+              <span id="permanent-url" class="mono"></span>
+            </p>
+            <div class="design-grid">
+              <label>Foreground <input id="field-fg" type="color" /></label>
+              <label>Background <input id="field-bg" type="color" /></label>
+              <label>Error correction
+                <select id="field-ecc"></select>
+              </label>
+              <label>Dot style
+                <select id="field-dots"></select>
+              </label>
+              <label>Corner style
+                <select id="field-corners"></select>
+              </label>
+              <label>QR size
+                <input id="field-size" type="range" min="160" max="512" step="8" />
+              </label>
+              <label>Margin
+                <input id="field-margin" type="range" min="0" max="32" step="1" />
+              </label>
+              <label>Logo size
+                <input id="field-logo-size" type="range" min="0.12" max="0.32" step="0.02" />
+              </label>
+            </div>
+            <label class="wide">Logo
+              <input id="field-logo" type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp,image/gif" />
+            </label>
+            <button type="button" class="btn btn-ghost" id="clear-logo">Remove logo</button>
+            <div class="editor-actions">
+              <button type="button" class="btn btn-ghost" id="cancel-edit">Cancel</button>
+              <button type="button" class="btn btn-accent" id="save-link">Save</button>
+            </div>
+          </form>
+          <div class="preview-pane">
+            <p class="preview-label">Preview</p>
+            <div id="qr-preview" class="qr-stage"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div id="auth-modal" class="modal" hidden>
+      <div class="dialog" role="dialog" aria-labelledby="auth-title">
+        <h2 id="auth-title">QRFossil needs GitHub write access</h2>
+        <p>
+          Create a fine-grained GitHub token for
+          <strong id="auth-repo">this repository</strong>
+          with permission
+          <strong>Contents → Read and write</strong>.
+          Nothing more.
+        </p>
+        <p>
+          <a id="token-settings" href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">Open GitHub Token Settings</a>
+        </p>
+        <label>Token
+          <input id="token-input" type="password" autocomplete="off" spellcheck="false" />
+        </label>
+        <p id="auth-error" class="form-error"></p>
+        <div class="dialog-actions">
+          <button type="button" class="btn btn-ghost" id="auth-cancel">Cancel</button>
+          <button type="button" class="btn btn-accent" id="auth-connect">Connect</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="confirm-modal" class="modal" hidden>
+      <div class="dialog" role="dialog" aria-labelledby="confirm-title">
+        <h2 id="confirm-title">Confirm</h2>
+        <p id="confirm-body"></p>
+        <div class="dialog-actions">
+          <button type="button" class="btn btn-ghost" id="confirm-cancel">Cancel</button>
+          <button type="button" class="btn btn-accent" id="confirm-ok">Confirm</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="qr-modal" class="modal" hidden>
+      <div class="dialog dialog-qr" role="dialog" aria-labelledby="qr-modal-title">
+        <h2 id="qr-modal-title">QR</h2>
+        <p id="qr-modal-url" class="mono"></p>
+        <div id="qr-modal-preview" class="qr-stage"></div>
+        <div class="dialog-actions">
+          <button type="button" class="btn btn-ghost" id="dl-png">Download PNG</button>
+          <button type="button" class="btn btn-ghost" id="dl-svg">Download SVG</button>
+          <button type="button" class="btn btn-accent" id="qr-modal-close">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="app/vendor/qr-code-styling.min.js"></script>
+    <script type="module" src="app/dashboard.js"></script>
+  </body>
+</html>

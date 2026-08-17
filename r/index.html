@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>QRFossil</title>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'unsafe-inline'; connect-src 'self'; img-src 'self'; base-uri 'self'; object-src 'none'"
+    />
+    <style>
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        background: #d8d4cb;
+        color: #1c1a16;
+        font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+      }
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12vh 8vw;
+      }
+      #status {
+        max-width: 28rem;
+      }
+    </style>
+  </head>
+  <body>
+    <p id="status">Opening QR…</p>
+    <script src="../public/redirect.js"></script>
+  </body>
+</html>

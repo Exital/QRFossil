@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>QRFossil</title>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'self'; img-src 'self'; base-uri 'self'; object-src 'none'"
+    />
+    <style>
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        background: #d8d4cb;
+        color: #1c1a16;
+        font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+      }
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12vh 8vw;
+        background:
+          radial-gradient(900px 500px at 10% 0, rgba(184, 136, 58, 0.16), transparent 55%),
+          #d8d4cb;
+      }
+      #status,
+      main {
+        max-width: 28rem;
+      }
+      .brand {
+        margin: 0 0 1rem;
+        font-size: clamp(2.4rem, 8vw, 4rem);
+        letter-spacing: -0.03em;
+      }
+      h1 {
+        margin: 0 0 0.6rem;
+        font-size: 1.6rem;
+        font-weight: 600;
+      }
+      p {
+        margin: 0;
+        line-height: 1.45;
+      }
+    </style>
+  </head>
+  <body>
+    <p id="status">Opening QR…</p>
+    <script>
+      (function () {
+        var parts = location.pathname.split("/").filter(Boolean);
+        var base = "";
+        if (parts[0] && parts[0] !== "r" && parts[0] !== "404.html") base = "/" + parts[0];
+        var isRedirect = parts.indexOf("r") !== -1 || /[?&]id=/.test(location.search);
+        if (!isRedirect) {
+          document.title = "Not found · QRFossil";
+          document.body.innerHTML =
+            '<main><p class="brand">QRFossil</p><h1>Page not found</h1><p>This address is not a QRFossil dashboard or redirect.</p></main>';
+          return;
+        }
+        var script = document.createElement("script");
+        script.src = base + "/public/redirect.js";
+        document.head.appendChild(script);
+      })();
+    </script>
+  </body>
+</html>
