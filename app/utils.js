@@ -5,6 +5,11 @@ export const REDIRECTS_PATH = "data/redirects.json";
 
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
+export function isLocalDev() {
+  const host = location.hostname;
+  return host === "127.0.0.1" || host === "localhost";
+}
+
 export function getPublicBase() {
   const { origin, hostname, pathname } = location;
   const parts = pathname.replace(/\/index\.html$/i, "").split("/").filter(Boolean);

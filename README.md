@@ -92,7 +92,9 @@ python3 scripts/preview.py
 
 Then open `http://127.0.0.1:8765/`. That server mimics GitHub Pages: unknown paths such as `/r/example` are served with `404.html`, so redirects work locally.
 
-Edit files and reload the browser. Dashboard reads come from local `data/`. Saves still use the GitHub API (enter a PAT scoped to your fork), so a write test creates a real commit.
+Create, edit, and save from the dashboard. On localhost the preview server writes `data/` and `assets/logos/` on disk. Nothing is committed, and no GitHub token is required. Git stays a separate `git diff` / `git commit` when you want to publish.
+
+Do not bind the preview server to a public address. The writer only accepts loopback clients (`127.0.0.1` / `localhost`). GitHub Pages never runs this Python process, so a public Pages site cannot use the local writer.
 
 ```bash
 python3 scripts/preview.py --port 9000

@@ -4,6 +4,7 @@ import {
   encodeBytesBase64,
   encodeUtf8Base64,
   inferRepo,
+  isLocalDev,
   looksLikeSecret,
 } from "./utils.js";
 
@@ -16,6 +17,52 @@ export class GitConflictError extends Error {
     super(message || "Repository changed — reloaded. Please retry.");
     this.name = "GitConflictError";
   }
+}
+
+export { isLocalDev };
+
+const LOCAL_HEADER = { "X-QRFossil-Local": "1" };
+
+let localProbe = { at: 0, ok: false };
+
+export async function probeLocalWriter() {
+  if (!isLocalDev()) return false;
+  const now = Date.now();
+  if (now - localProbe.at < 3000) return localProbe.ok;
+  try {
+    const response = await fetch("/__dev/status", { cache: "no-store", headers: LOCAL_HEADER });
+    const data = await response.json().catch(() => ({}));
+    localProbe = { at: now, ok: response.ok && data.ok === true };
+  } catch {
+    localProbe = { at: now, ok: false };
+  }
+  return localProbe.ok;
+}
+
+async function localApi(method, relPath, body) {
+  const url =
+    method === "GET"
+      ? `/__dev/file?path=${encodeURIComponent(relPath)}`
+      : "/__dev/file";
+  const headers = { ...LOCAL_HEADER };
+  if (body !== undefined) headers["Content-Type"] = "application/json";
+  const payload = body === undefined ? undefined : { ...body, path: relPath };
+  const response = await fetch(url, {
+    method,
+    cache: "no-store",
+    headers,
+    body: payload === undefined ? undefined : JSON.stringify(payload),
+  });
+  let data = null;
+  const text = await response.text();
+  if (text) {
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = { message: text };
+    }
+  }
+  return { response, data };
 }
 
 export class GitAuthError extends Error {
@@ -85,6 +132,12 @@ async function api(path, { method = "GET", body, token } = {}) {
 }
 
 export async function validateToken(token, owner, repo) {
+  if (isLocalDev()) {
+    if (!(await probeLocalWriter())) {
+      throw new GitAuthError("Start python3 scripts/preview.py to save locally.");
+    }
+    return { owner: owner || "local", repo: repo || "qrfossil", fullName: "local/qrfossil" };
+  }
   const trimmed = String(token || "").trim();
   if (!trimmed) throw new GitAuthError("Enter a GitHub token.");
   if (!owner || !repo) throw new GitAuthError("Repository could not be detected.");
@@ -136,6 +189,17 @@ export async function validateToken(token, owner, repo) {
 }
 
 export async function getFile(owner, repo, path) {
+  if (isLocalDev()) {
+    if (!(await probeLocalWriter())) {
+      throw new Error("Start python3 scripts/preview.py to save locally.");
+    }
+    const { response, data } = await localApi("GET", path);
+    if (response.status === 404) return null;
+    if (response.status === 409) throw new GitConflictError();
+    if (!response.ok) throw new Error((data && data.message) || `Could not read ${path}.`);
+    const text = data.encoding === "base64" ? decodeUtf8Base64(data.content) : "";
+    return { sha: data.sha, text, path: data.path || path, size: data.size };
+  }
   const { response, data } = await api(
     `/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents/${encodePath(path)}`
   );
@@ -159,6 +223,16 @@ export async function putFile(owner, repo, { path, text, bytes, sha, message }) 
   }
   if (looksLikeSecret(payload)) {
     throw new Error("Refusing to write: the file looks like it contains a GitHub token.");
+  }
+
+  if (isLocalDev()) {
+    if (!(await probeLocalWriter())) {
+      throw new Error("Start python3 scripts/preview.py to save locally.");
+    }
+    const { response, data } = await localApi("PUT", path, { content, sha, message });
+    if (response.status === 409) throw new GitConflictError();
+    if (!response.ok) throw new Error((data && data.message) || `Could not write ${path}.`);
+    return data;
   }
 
   const body = { message, content };
@@ -185,6 +259,14 @@ export async function putFile(owner, repo, { path, text, bytes, sha, message }) 
 
 export async function deleteFile(owner, repo, { path, sha, message }) {
   if (!sha) return null;
+  if (isLocalDev()) {
+    if (!(await probeLocalWriter())) return null;
+    const { response, data } = await localApi("DELETE", path, { sha, message });
+    if (response.status === 404) return null;
+    if (response.status === 409) throw new GitConflictError();
+    if (!response.ok) throw new Error((data && data.message) || `Could not delete ${path}.`);
+    return data;
+  }
   const { response, data } = await api(
     `/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents/${encodePath(path)}`,
     { method: "DELETE", body: { message, sha } }

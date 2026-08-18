@@ -1,4 +1,4 @@
-import { clearToken, getToken, setToken, validateToken } from "./github.js";
+import { clearToken, getToken, isLocalDev, setToken, validateToken } from "./github.js";
 import { setText, show } from "./utils.js";
 
 export function bindAuth({
@@ -77,7 +77,7 @@ export function bindAuth({
   });
 
   enableBtn?.addEventListener("click", async () => {
-    if (getToken()) {
+    if (isLocalDev() || getToken()) {
       onModeChange(true);
       return;
     }
@@ -90,11 +90,25 @@ export function bindAuth({
 
   function render({ canEdit, repo }) {
     enableBtn._repo = repo;
+    if (isLocalDev()) {
+      setText(badgeEl, canEdit ? "Local" : "Read-only");
+      badgeEl.classList.toggle("is-edit", canEdit);
+      show(enableBtn, !canEdit);
+      show(connectedEl, canEdit);
+      show(forgetBtn, false);
+      setText(document.querySelector("#github-label"), "Dev");
+      setText(document.querySelector("#github-state"), "files only");
+      if (repoEl) setText(repoEl, "local preview · no commit");
+      return;
+    }
+    setText(document.querySelector("#github-label"), "GitHub");
+    setText(document.querySelector("#github-state"), "Connected");
     const connected = Boolean(getToken());
     setText(badgeEl, canEdit ? "Editor" : "Read-only");
     badgeEl.classList.toggle("is-edit", canEdit);
     show(enableBtn, !canEdit);
     show(connectedEl, connected);
+    show(forgetBtn, connected);
     if (repoEl) setText(repoEl, repo.owner && repo.repo ? `${repo.owner}/${repo.repo}` : "");
   }
 

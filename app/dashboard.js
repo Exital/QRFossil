@@ -6,6 +6,8 @@ import {
   deleteFile,
   getFile,
   getToken,
+  isLocalDev,
+  probeLocalWriter,
   putFile,
   resolveRepo,
   validateToken,
@@ -78,6 +80,14 @@ function applySite(config, setup) {
 }
 
 async function ensureWriteAccess() {
+  if (isLocalDev()) {
+    if (!(await probeLocalWriter())) {
+      throw new Error("Start python3 scripts/preview.py to save locally. A plain static server cannot write files.");
+    }
+    state.canEdit = true;
+    renderChrome();
+    return;
+  }
   const { owner, repo: name } = repo();
   if (!owner || !name) throw new GitAuthError("Repository could not be detected. Finish setup first.");
   let token = getToken();
@@ -490,7 +500,7 @@ async function onSave() {
     if ((uploadedPath || state.logoCleared) && oldLogo && oldLogo !== uploadedPath) await maybeDeleteLogo(oldLogo);
     clearPendingLogo();
     state.logoCleared = false;
-    toast("Saved. GitHub Pages may take a minute to publish.");
+    toast(isLocalDev() ? "Saved locally. Nothing was committed." : "Saved. GitHub Pages may take a minute to publish.");
     renderHome();
   } catch (err) {
     await handleWriteError(err);
@@ -791,7 +801,12 @@ async function boot() {
     };
   }
 
-  if (getToken()) {
+  if (isLocalDev()) {
+    state.canEdit = await probeLocalWriter();
+    if (!state.canEdit && els.banner.hidden) {
+      banner("Local preview is read-only until you run python3 scripts/preview.py.");
+    }
+  } else if (getToken()) {
     try {
       const r = repo();
       if (r.owner && r.repo) {
