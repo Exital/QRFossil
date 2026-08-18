@@ -10,7 +10,7 @@ import {
   resolveRepo,
   validateToken,
 } from "./github.js";
-import { CORNER_OPTIONS, DOT_OPTIONS, ECC_OPTIONS, downloadQr, renderQr } from "./qr.js";
+import { CORNER_OPTIONS, DOT_OPTIONS, ECC_OPTIONS, downloadQr, prepareQrImage, renderQr } from "./qr.js";
 import { buildRedirects } from "./redirects.js";
 import { bindWizard, needsSetup, renderChecks, validateEnvironment } from "./setup.js";
 import {
@@ -408,13 +408,19 @@ function updatePermanentPreview() {
   setText(els.permUrl, permanentUrl(baseUrl, slug));
 }
 
-function updateQrPreview() {
+let previewSeq = 0;
+
+async function updateQrPreview() {
+  const seq = ++previewSeq;
   const values = editorValues();
   const baseUrl = (state.config.site && state.config.site.baseUrl) || getPublicBase();
   const data = permanentUrl(baseUrl, values.slug || "your-slug");
+  const imageUrl = await prepareQrImage(logoPreviewSrc());
+  if (seq !== previewSeq) return;
   try {
-    state.preview = renderQr(els.qrPreview, data, values.qr, logoPreviewSrc());
+    await renderQr(els.qrPreview, data, values.qr, imageUrl);
   } catch (err) {
+    if (seq !== previewSeq) return;
     setText(els.qrPreview, err.message || "Preview unavailable.");
   }
 }
@@ -603,9 +609,13 @@ function openQrModal(slug, link, baseUrl) {
   const data = permanentUrl(baseUrl, slug);
   setText(els.qrModalTitle, link.name || slug);
   setText(els.qrModalUrl, data);
-  renderQr(els.qrModalPreview, data, link.qr || defaultQr(), assetUrl(link.qr && link.qr.logo));
-  els.dlPng.onclick = () => downloadQr(data, link.qr, assetUrl(link.qr && link.qr.logo), { name: slug, extension: "png" });
-  els.dlSvg.onclick = () => downloadQr(data, link.qr, assetUrl(link.qr && link.qr.logo), { name: slug, extension: "svg" });
+  const logo = assetUrl(link.qr && link.qr.logo);
+  void (async () => {
+    const src = logo ? await prepareQrImage(logo) : "";
+    await renderQr(els.qrModalPreview, data, link.qr || defaultQr(), src);
+  })();
+  els.dlPng.onclick = () => downloadQr(data, link.qr, logo, { name: slug, extension: "png" });
+  els.dlSvg.onclick = () => downloadQr(data, link.qr, logo, { name: slug, extension: "svg" });
   show(els.qrModal, true);
 }
 

@@ -80,6 +80,24 @@ Destination URLs are not secret. Anyone who opens a QR can observe where it goes
 
 Fresh forks start with analytics off. GitHub Pages cannot keep exact scan counts by itself. Optional providers can be added later without changing the static core.
 
+## Local preview
+
+Fork users do not need this. For changing QRFossil itself, do not push-and-wait on Pages.
+
+From the repo root:
+
+```bash
+python3 scripts/preview.py
+```
+
+Then open `http://127.0.0.1:8765/`. That server mimics GitHub Pages: unknown paths such as `/r/example` are served with `404.html`, so redirects work locally.
+
+Edit files and reload the browser. Dashboard reads come from local `data/`. Saves still use the GitHub API (enter a PAT scoped to your fork), so a write test creates a real commit.
+
+```bash
+python3 scripts/preview.py --port 9000
+```
+
 ## Updating QRFossil
 
 Application code lives under `app/` and the root HTML files. Your state lives in `data/` and `assets/`. When you pull upstream changes, keep those two directories yours.

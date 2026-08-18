@@ -30,6 +30,15 @@ export function normalizeQr(qr = {}) {
   };
 }
 
+function imageOptions(logoSize) {
+  return {
+    hideBackgroundDots: true,
+    imageSize: logoSize,
+    margin: 4,
+    saveAsBlob: false,
+  };
+}
+
 export function createQr(data, qr, imageUrl) {
   const settings = normalizeQr(qr);
   const Ctor = QRCtor();
@@ -59,26 +68,121 @@ export function createQr(data, qr, imageUrl) {
       color: settings.foreground,
       type: settings.corners === "extra-rounded" ? "dot" : settings.corners === "rounded" ? "dot" : settings.corners,
     },
-    imageOptions: {
-      hideBackgroundDots: true,
-      imageSize: settings.logoSize,
-      margin: 4,
-      crossOrigin: "anonymous",
-    },
+    imageOptions: imageOptions(settings.logoSize),
   });
 }
 
-export function renderQr(container, data, qr, imageUrl) {
-  if (!container) return null;
-  container.replaceChildren();
+function loadHtmlImage(url) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error("Logo could not be loaded."));
+    img.src = url;
+  });
+}
+
+function blobToImage(blob) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(blob);
+    const img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      resolve(img);
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("QR render failed."));
+    };
+    img.src = url;
+  });
+}
+
+function rasterizeImage(img) {
+  const width = Math.max(img.naturalWidth || 0, img.width || 0, 256);
+  const height = Math.max(img.naturalHeight || 0, img.height || 0, 256);
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return "";
+  ctx.drawImage(img, 0, 0, width, height);
+  try {
+    return canvas.toDataURL("image/png");
+  } catch {
+    return "";
+  }
+}
+
+export async function prepareQrImage(url) {
+  if (!url) return "";
+  try {
+    const img = await loadHtmlImage(url);
+    return rasterizeImage(img);
+  } catch {
+    return "";
+  }
+}
+
+function paintLogo(ctx, logo, settings) {
+  const inner = Math.max(1, settings.size - 2 * settings.margin);
+  const box = inner * settings.logoSize;
+  const x = (settings.size - box) / 2;
+  const y = (settings.size - box) / 2;
+  ctx.fillStyle = settings.background;
+  ctx.fillRect(x, y, box, box);
+  ctx.drawImage(logo, x, y, box, box);
+}
+
+async function compositeQr(data, qr, imageUrl) {
+  const settings = normalizeQr(qr);
   const instance = createQr(data, qr, imageUrl);
-  instance.append(container);
-  return instance;
+  const blob = await instance.getRawData("png");
+  if (!blob) throw new Error("QR generator failed.");
+  const qrImg = await blobToImage(blob);
+  const canvas = document.createElement("canvas");
+  canvas.width = settings.size;
+  canvas.height = settings.size;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("QR generator failed.");
+  ctx.drawImage(qrImg, 0, 0, settings.size, settings.size);
+  if (imageUrl) {
+    const logo = await loadHtmlImage(imageUrl);
+    paintLogo(ctx, logo, settings);
+  }
+  return canvas;
+}
+
+function triggerDownload(href, filename) {
+  const a = document.createElement("a");
+  a.href = href;
+  a.download = filename;
+  a.rel = "noopener";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+
+export async function renderQr(container, data, qr, imageUrl) {
+  if (!container) return null;
+  const canvas = await compositeQr(data, qr, imageUrl);
+  container.replaceChildren(canvas);
+  return canvas;
 }
 
 export async function downloadQr(data, qr, imageUrl, { name, extension }) {
-  const instance = createQr(data, qr, imageUrl);
-  await instance.download({ name: name || "qr", extension: extension || "png" });
+  const src = await prepareQrImage(imageUrl);
+  const canvas = await compositeQr(data, qr, src);
+  const file = name || "qr";
+  if (extension === "svg") {
+    const png = canvas.toDataURL("image/png");
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${canvas.width}" height="${canvas.height}" viewBox="0 0 ${canvas.width} ${canvas.height}"><image href="${png}" width="${canvas.width}" height="${canvas.height}"/></svg>`;
+    const blob = new Blob([svg], { type: "image/svg+xml" });
+    const href = URL.createObjectURL(blob);
+    triggerDownload(href, `${file}.svg`);
+    setTimeout(() => URL.revokeObjectURL(href), 1000);
+    return;
+  }
+  triggerDownload(canvas.toDataURL("image/png"), `${file}.png`);
 }
 
 export const DOT_OPTIONS = DOT_TYPES;
