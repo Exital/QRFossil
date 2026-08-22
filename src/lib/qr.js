@@ -1,12 +1,8 @@
+import QRCodeStyling from "qr-code-styling";
+
 const DOT_TYPES = ["square", "rounded", "extra-rounded", "dots", "classy", "classy-rounded"];
 const CORNER_TYPES = ["square", "rounded", "extra-rounded", "dot"];
 const ECC = ["L", "M", "Q", "H"];
-
-function QRCtor() {
-  const ctor = window.QRCodeStyling;
-  if (!ctor) throw new Error("QR generator failed to load.");
-  return ctor;
-}
 
 function clamp(n, min, max) {
   const value = Number(n);
@@ -41,9 +37,8 @@ function imageOptions(logoSize) {
 
 export function createQr(data, qr, imageUrl) {
   const settings = normalizeQr(qr);
-  const Ctor = QRCtor();
   const hasImage = Boolean(imageUrl);
-  return new Ctor({
+  return new QRCodeStyling({
     width: settings.size,
     height: settings.size,
     type: "canvas",
@@ -162,9 +157,16 @@ function triggerDownload(href, filename) {
   a.remove();
 }
 
-export async function renderQr(container, data, qr, imageUrl) {
+export async function renderQr(container, data, qr, imageUrl, { fit = false } = {}) {
   if (!container) return null;
   const canvas = await compositeQr(data, qr, imageUrl);
+  if (fit) {
+    canvas.style.display = "block";
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
+    canvas.style.maxWidth = "100%";
+    canvas.style.maxHeight = "100%";
+  }
   container.replaceChildren(canvas);
   return canvas;
 }

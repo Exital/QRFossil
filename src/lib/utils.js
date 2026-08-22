@@ -10,6 +10,16 @@ export function isLocalDev() {
   return host === "127.0.0.1" || host === "localhost";
 }
 
+export function getRouterBasename() {
+  const { hostname, pathname } = location;
+  const parts = pathname.replace(/\/index\.html$/i, "").split("/").filter(Boolean);
+  if (hostname.endsWith(".github.io")) {
+    if (parts.length && parts[0] !== "r") return `/${parts[0]}`;
+    return "";
+  }
+  return "";
+}
+
 export function getPublicBase() {
   const { origin, hostname, pathname } = location;
   const parts = pathname.replace(/\/index\.html$/i, "").split("/").filter(Boolean);

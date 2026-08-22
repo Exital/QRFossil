@@ -1,0 +1,11 @@
+services:
+  pages:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+      - qrfossil-node-modules:/app/node_modules
+
+volumes:
+  qrfossil-node-modules:

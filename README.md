@@ -23,7 +23,7 @@ Your QR codes never depend on QRFossil’s infrastructure—because QRFossil doe
 
 Done.
 
-No npm, Docker, database, or server is required. If the dashboard does not load, wait a minute for Pages to finish deploying, then confirm Pages is enabled on `main`.
+No Node, Docker, database, or server is required for **using** a fork on GitHub Pages. Changing the dashboard UI does need a build (Docker, below). If the dashboard does not load, wait a minute for Pages to finish deploying, then confirm Pages is enabled on `main`.
 
 ## How it works
 
@@ -80,17 +80,62 @@ Destination URLs are not secret. Anyone who opens a QR can observe where it goes
 
 Fresh forks start with analytics off. GitHub Pages cannot keep exact scan counts by itself. Optional providers can be added later without changing the static core.
 
-## Local preview
+## Build the dashboard (Docker)
 
-Fork users do not need this. For changing QRFossil itself, do not push-and-wait on Pages.
+The React dashboard is compiled to static files GitHub Pages can serve: `index.html` and `app-assets/`. `dist/` is only a temporary folder and is gitignored. You do not need Node on the host.
 
 From the repo root:
 
 ```bash
+docker compose run --rm pages
+```
+
+Or:
+
+```bash
+./scripts/build-docker.sh
+```
+
+The container bind-mounts this repository at `/app` and writes the build back onto the host. `node_modules` stays in a Docker volume (`qrfossil-node-modules`), not in your working tree.
+
+After a successful build, commit the generated files and push `main`:
+
+- `index.html`
+- `app-assets/`
+
+Pages publishes the **repo root**, not `dist/`.
+
+Equivalent `docker run` (after `docker build -t qrfossil-pages .`):
+
+```bash
+docker run --rm \
+  -v "$PWD:/app" \
+  -v qrfossil-node-modules:/app/node_modules \
+  qrfossil-pages
+```
+
+Without Docker, `npm ci && npm run build:pages` does the same thing if you have Node 20+ locally.
+
+## Local preview
+
+Fork users do not need this. For changing QRFossil itself, do not push-and-wait on Pages.
+
+Build the dashboard (Docker, above), then use the Python preview server (which mimics GitHub Pages redirects and local file writes):
+
+```bash
+docker compose run --rm pages
 python3 scripts/preview.py
 ```
 
 Then open `http://127.0.0.1:8765/`. That server mimics GitHub Pages: unknown paths such as `/r/example` are served with `404.html`, so redirects work locally.
+
+For UI development with hot reload:
+
+```bash
+npm run dev
+```
+
+Vite serves the dashboard on `http://127.0.0.1:5173/`. Saving to `data/` still requires `python3 scripts/preview.py` on port 8765 and using the built dashboard (`npm run build:pages`) — the dev server does not include the local writer API.
 
 Create, edit, and save from the dashboard. On localhost the preview server writes `data/` and `assets/logos/` on disk. Nothing is committed, and no GitHub token is required. Git stays a separate `git diff` / `git commit` when you want to publish.
 
@@ -102,8 +147,8 @@ python3 scripts/preview.py --port 9000
 
 ## Updating QRFossil
 
-Application code lives under `app/` and the root HTML files. Your state lives in `data/` and `assets/`. When you pull upstream changes, keep those two directories yours.
+Application source lives under `src/`. Built assets land in `app-assets/` at the repo root after the Docker (or npm) build. Your state lives in `data/` and `assets/logos/`. When you pull upstream changes, keep those two directories yours.
 
 ## License
 
-MIT. Vendored fonts and `qr-code-styling` keep their own licenses; see `app/vendor/NOTICE`.
+MIT. `qr-code-styling` is used via npm (MIT).
