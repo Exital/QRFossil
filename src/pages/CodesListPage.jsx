@@ -6,6 +6,8 @@ import TopBar from "../components/layout/TopBar.jsx";
 import Banner from "../components/ui/Banner.jsx";
 import { Card, StatusBadge } from "../components/ui/Banner.jsx";
 import Icon from "../components/ui/Icon.jsx";
+import QrPreview from "../components/qr/QrPreview.jsx";
+import { defaultQr } from "../lib/utils.js";
 
 export default function CodesListPage() {
   const { linkEntries, copyLink, assetUrl, permanentUrl } = useApp();
@@ -57,17 +59,27 @@ export default function CodesListPage() {
             {filtered.map(([slug, link]) => (
               <Card key={slug} className="group transition-shadow hover:shadow-card-hover">
                 <div className="flex flex-col gap-md sm:flex-row sm:items-center sm:justify-between">
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-sm">
-                      <h3 className="text-headline-sm text-on-surface">{link.name || slug}</h3>
-                      <StatusBadge enabled={link.enabled} />
+                  <div className="flex min-w-0 flex-1 items-start gap-md">
+                    <div className="h-[88px] w-[88px] shrink-0 overflow-hidden rounded-xl border border-card bg-white p-xs">
+                      <QrPreview
+                        data={permanentUrl(slug)}
+                        qr={{ ...defaultQr(), ...(link.qr || {}), size: 160 }}
+                        logoUrl={link.qr?.logo ? assetUrl(link.qr.logo) : ""}
+                        className="h-full w-full"
+                      />
                     </div>
-                    <p className="mt-xs font-mono text-label-sm text-on-surface-variant">/r/{slug}</p>
-                    <p className="mt-xs truncate text-body-sm text-on-surface-variant">
-                      {link.enabled ? link.destination : "Disabled — scans show a paused message"}
-                    </p>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-sm">
+                        <h3 className="text-headline-sm text-on-surface">{link.name || slug}</h3>
+                        <StatusBadge enabled={link.enabled} />
+                      </div>
+                      <p className="mt-xs font-mono text-label-sm text-on-surface-variant">/r/{slug}</p>
+                      <p className="mt-xs truncate text-body-sm text-on-surface-variant">
+                        {link.enabled ? link.destination : "Disabled — scans show a paused message"}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex flex-wrap gap-xs">
+                  <div className="flex flex-wrap gap-xs sm:shrink-0">
                     <button
                       type="button"
                       onClick={() => copyLink(slug)}

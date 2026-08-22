@@ -28,10 +28,11 @@ export function StatusBadge({ enabled }) {
   );
 }
 
-export function Card({ children, className = "" }) {
+export function Card({ children, className = "", ...props }) {
   return (
     <section
       className={`rounded-xl border border-card bg-surface-container-lowest p-md shadow-card dark:border-outline-variant ${className}`}
+      {...props}
     >
       {children}
     </section>

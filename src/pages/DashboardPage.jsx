@@ -4,9 +4,11 @@ import TopBar from "../components/layout/TopBar.jsx";
 import Banner from "../components/ui/Banner.jsx";
 import { Card, StatusBadge } from "../components/ui/Banner.jsx";
 import Icon from "../components/ui/Icon.jsx";
+import QrPreview from "../components/qr/QrPreview.jsx";
+import { defaultQr } from "../lib/utils.js";
 
 export default function DashboardPage() {
-  const { linkEntries, siteName, baseUrl, copyLink } = useApp();
+  const { linkEntries, siteName, baseUrl, copyLink, permanentUrl, assetUrl } = useApp();
   const navigate = useNavigate();
 
   const active = linkEntries.filter(([, l]) => l.enabled).length;
@@ -68,37 +70,49 @@ export default function DashboardPage() {
                 className="cursor-pointer transition-shadow hover:shadow-card-hover"
                 onClick={() => navigate(`/codes/${slug}`)}
               >
-                <div className="flex items-start justify-between gap-sm">
-                  <div>
-                    <h4 className="text-headline-sm text-on-surface">{link.name || slug}</h4>
-                    <p className="mt-xs font-mono text-label-sm text-on-surface-variant">/r/{slug}</p>
+                <div className="flex items-start gap-md">
+                  <div className="h-[88px] w-[88px] shrink-0 overflow-hidden rounded-xl border border-card bg-white p-xs">
+                    <QrPreview
+                      data={permanentUrl(slug)}
+                      qr={{ ...defaultQr(), ...(link.qr || {}), size: 160 }}
+                      logoUrl={link.qr?.logo ? assetUrl(link.qr.logo) : ""}
+                      className="h-full w-full"
+                    />
                   </div>
-                  <StatusBadge enabled={link.enabled} />
-                </div>
-                <p className="mt-sm truncate text-body-sm text-on-surface-variant">
-                  {link.enabled ? link.destination : "Disabled"}
-                </p>
-                <div className="mt-md flex gap-xs">
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      copyLink(slug);
-                    }}
-                    className="rounded-lg border border-outline-variant px-sm py-xs text-label-sm hover:bg-surface-container-low"
-                  >
-                    Copy link
-                  </button>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/codes/${slug}`);
-                    }}
-                    className="rounded-lg bg-primary/10 px-sm py-xs text-label-sm text-primary hover:bg-primary/20"
-                  >
-                    Manage
-                  </button>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-start justify-between gap-sm">
+                      <div className="min-w-0">
+                        <h4 className="text-headline-sm text-on-surface">{link.name || slug}</h4>
+                        <p className="mt-xs font-mono text-label-sm text-on-surface-variant">/r/{slug}</p>
+                      </div>
+                      <StatusBadge enabled={link.enabled} />
+                    </div>
+                    <p className="mt-sm truncate text-body-sm text-on-surface-variant">
+                      {link.enabled ? link.destination : "Disabled"}
+                    </p>
+                    <div className="mt-md flex gap-xs">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          copyLink(slug);
+                        }}
+                        className="rounded-lg border border-outline-variant px-sm py-xs text-label-sm hover:bg-surface-container-low"
+                      >
+                        Copy link
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/codes/${slug}`);
+                        }}
+                        className="rounded-lg bg-primary/10 px-sm py-xs text-label-sm text-primary hover:bg-primary/20"
+                      >
+                        Manage
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </Card>
             ))}
