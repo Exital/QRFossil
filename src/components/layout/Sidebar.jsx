@@ -21,15 +21,15 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="fixed left-0 top-0 z-50 flex h-screen w-[280px] flex-col space-y-base border-r border-outline-variant bg-surface-container-low p-md shadow-sm">
+    <aside className="fixed left-0 top-0 z-50 flex h-screen w-[350px] flex-col space-y-base border-r border-outline-variant bg-surface-container-low p-md shadow-sm">
       <div className="mb-lg flex items-center gap-sm">
         <img
           alt="QRFossil logo"
-          className="h-10 w-10 rounded-lg border border-outline-variant bg-surface-container-lowest shadow-sm"
+          className="h-12 w-12 rounded-lg border border-outline-variant bg-surface-container-lowest shadow-sm"
           src={markSvg}
         />
         <div>
-          <h1 className="text-[20px] font-bold leading-tight text-primary">{siteName}</h1>
+          <h1 className="text-[25px] font-bold leading-tight text-primary">{siteName}</h1>
           <p className="text-body-sm text-on-surface-variant">Self-hosted · GitHub Pages</p>
         </div>
       </div>

@@ -10,14 +10,14 @@ export default function TopBar({ title, search, onSearchChange }) {
   }
 
   return (
-    <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between border-b border-outline-variant bg-surface-container-lowest px-margin-mobile lg:px-margin-desktop">
+    <header className="sticky top-0 z-40 flex h-20 w-full items-center justify-between border-b border-outline-variant bg-surface-container-lowest px-margin-mobile lg:px-margin-desktop">
       <div className="flex items-center gap-md">
         <span className="text-headline-md font-bold tracking-tight text-on-surface">{title}</span>
         {onSearchChange && (
           <div className="relative hidden items-center rounded-lg transition-all focus-within:ring-2 focus-within:ring-primary lg:flex">
             <Icon name="search" size={20} className="pointer-events-none absolute left-sm text-on-surface-variant" />
             <input
-              className="w-64 rounded-lg border-none bg-surface-container-low py-xs pl-xl pr-sm text-body-sm text-on-surface placeholder:text-outline focus:ring-0"
+              className="w-80 rounded-lg border-none bg-surface-container-low py-xs pl-xl pr-sm text-body-sm text-on-surface placeholder:text-outline focus:ring-0"
               placeholder="Search codes..."
               type="search"
               value={search || ""}

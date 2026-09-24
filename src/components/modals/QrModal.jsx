@@ -34,7 +34,7 @@ export default function QrModal({ open, link, slug, qrData, logoUrl, onClose }) 
           </button>
         </div>
         <p className="mb-md break-all font-mono text-label-sm text-on-surface-variant">{qrData}</p>
-        <div className="mx-auto mb-md flex aspect-square w-full max-w-[280px] items-center justify-center overflow-hidden rounded-xl border border-card bg-white p-4 dark:border-outline-variant">
+        <div className="mx-auto mb-md flex aspect-square w-full max-w-[350px] items-center justify-center overflow-hidden rounded-xl border border-card bg-white p-4 dark:border-outline-variant">
           <QrPreview data={qrData} qr={qr} logoUrl={logoUrl} className="h-full w-full" />
         </div>
         <DownloadButtons

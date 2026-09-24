@@ -474,7 +474,7 @@ export default function EditorPage() {
               <div className="mb-md flex w-full items-center justify-between">
                 <h3 className="text-headline-sm text-on-surface">Preview</h3>
               </div>
-              <div className="relative mb-lg mx-auto flex aspect-square w-full max-w-[288px] shrink-0 items-center justify-center rounded-2xl border border-card bg-white p-md shadow-[0_4px_12px_rgba(15,23,42,0.05)]">
+              <div className="relative mb-lg mx-auto flex aspect-square w-full max-w-[360px] shrink-0 items-center justify-center rounded-2xl border border-card bg-white p-md shadow-[0_4px_12px_rgba(15,23,42,0.05)]">
                 <QrPreview data={qrData} qr={form.qr} logoUrl={logoPreviewSrc} className="flex h-full w-full items-center justify-center" />
               </div>
               <DownloadButtons
@@ -491,7 +491,7 @@ export default function EditorPage() {
               <Card className="flex items-center justify-between transition-all hover:shadow-card-hover">
                 <div>
                   <p className="mb-xs text-body-sm text-on-surface-variant">Total codes</p>
-                  <h3 className="text-[32px] font-bold tracking-tight text-on-surface">{linkEntries.length}</h3>
+                  <h3 className="text-[40px] font-bold tracking-tight text-on-surface">{linkEntries.length}</h3>
                 </div>
                 <Icon name="arrow_forward" className="text-outline" />
               </Card>

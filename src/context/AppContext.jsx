@@ -64,10 +64,10 @@ export function AppProvider({ children }) {
   const [darkMode, setDarkMode] = useState(() => {
     try {
       const stored = localStorage.getItem("qrfossil.dark");
-      if (stored === null) return true;
+      if (stored === null) return false;
       return stored === "1";
     } catch {
-      return true;
+      return false;
     }
   });
   const toastTimer = useRef(null);

@@ -29,15 +29,15 @@ export default function DashboardPage() {
         <div className="mb-gutter grid grid-cols-1 gap-gutter sm:grid-cols-3">
           <Card>
             <p className="text-body-sm text-on-surface-variant">Total QR Codes</p>
-            <p className="mt-xs text-[32px] font-bold tracking-tight text-on-surface">{linkEntries.length}</p>
+            <p className="mt-xs text-[40px] font-bold tracking-tight text-on-surface">{linkEntries.length}</p>
           </Card>
           <Card>
             <p className="text-body-sm text-on-surface-variant">Active</p>
-            <p className="mt-xs text-[32px] font-bold tracking-tight text-active-text">{active}</p>
+            <p className="mt-xs text-[40px] font-bold tracking-tight text-active-text">{active}</p>
           </Card>
           <Card>
             <p className="text-body-sm text-on-surface-variant">Paused</p>
-            <p className="mt-xs text-[32px] font-bold tracking-tight text-disabled-text">{paused}</p>
+            <p className="mt-xs text-[40px] font-bold tracking-tight text-disabled-text">{paused}</p>
           </Card>
         </div>
 
@@ -71,10 +71,10 @@ export default function DashboardPage() {
                 onClick={() => navigate(`/codes/${slug}`)}
               >
                 <div className="flex items-start gap-md">
-                  <div className="h-[88px] w-[88px] shrink-0 overflow-hidden rounded-xl border border-card bg-white p-xs">
+                  <div className="h-[160px] w-[160px] shrink-0 overflow-hidden rounded-xl border border-card bg-white p-xs">
                     <QrPreview
                       data={permanentUrl(slug)}
-                      qr={{ ...defaultQr(), ...(link.qr || {}), size: 160 }}
+                      qr={{ ...defaultQr(), ...(link.qr || {}), size: 320 }}
                       logoUrl={link.qr?.logo ? assetUrl(link.qr.logo) : ""}
                       className="h-full w-full"
                     />

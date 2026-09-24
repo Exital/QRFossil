@@ -60,10 +60,10 @@ export default function CodesListPage() {
               <Card key={slug} className="group transition-shadow hover:shadow-card-hover">
                 <div className="flex flex-col gap-md sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex min-w-0 flex-1 items-start gap-md">
-                    <div className="h-[88px] w-[88px] shrink-0 overflow-hidden rounded-xl border border-card bg-white p-xs">
+                    <div className="h-[160px] w-[160px] shrink-0 overflow-hidden rounded-xl border border-card bg-white p-xs">
                       <QrPreview
                         data={permanentUrl(slug)}
-                        qr={{ ...defaultQr(), ...(link.qr || {}), size: 160 }}
+                        qr={{ ...defaultQr(), ...(link.qr || {}), size: 320 }}
                         logoUrl={link.qr?.logo ? assetUrl(link.qr.logo) : ""}
                         className="h-full w-full"
                       />
