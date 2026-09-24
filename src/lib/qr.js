@@ -76,25 +76,45 @@ function loadHtmlImage(url) {
   });
 }
 
-function blobToImage(blob) {
-  return new Promise((resolve, reject) => {
-    const url = URL.createObjectURL(blob);
-    const img = new Image();
-    img.onload = () => {
-      URL.revokeObjectURL(url);
-      resolve(img);
-    };
-    img.onerror = () => {
-      URL.revokeObjectURL(url);
-      reject(new Error("QR render failed."));
-    };
-    img.src = url;
-  });
+function isSvgUrl(url) {
+  return /\.svg(\?|#|$)/i.test(String(url || "")) || String(url || "").startsWith("data:image/svg+xml");
+}
+
+async function rasterizeSvgUrl(url) {
+  const response = await fetch(url, { cache: "no-store" });
+  if (!response.ok) throw new Error("Logo could not be fetched.");
+  let svg = await response.text();
+  if (!/\swidth\s*=/.test(svg)) {
+    svg = svg.replace(/<svg\b/i, '<svg width="512" height="512"');
+  }
+  if (!/\sheight\s*=/.test(svg)) {
+    svg = svg.replace(/<svg\b/i, '<svg height="512"');
+  }
+  const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
+  const blobUrl = URL.createObjectURL(blob);
+  try {
+    const img = await loadHtmlImage(blobUrl);
+    const size = 512;
+    const canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("Logo rasterize failed.");
+    ctx.clearRect(0, 0, size, size);
+    ctx.drawImage(img, 0, 0, size, size);
+    return canvas.toDataURL("image/png");
+  } finally {
+    URL.revokeObjectURL(blobUrl);
+  }
 }
 
 function rasterizeImage(img) {
-  const width = Math.max(img.naturalWidth || 0, img.width || 0, 256);
-  const height = Math.max(img.naturalHeight || 0, img.height || 0, 256);
+  let width = Math.max(img.naturalWidth || 0, img.width || 0);
+  let height = Math.max(img.naturalHeight || 0, img.height || 0);
+  if (!width || !height) {
+    width = 512;
+    height = 512;
+  }
   const canvas = document.createElement("canvas");
   canvas.width = width;
   canvas.height = height;
@@ -111,11 +131,30 @@ function rasterizeImage(img) {
 export async function prepareQrImage(url) {
   if (!url) return "";
   try {
+    if (isSvgUrl(url) && !String(url).startsWith("data:image/png")) {
+      return await rasterizeSvgUrl(url);
+    }
     const img = await loadHtmlImage(url);
     return rasterizeImage(img);
   } catch {
     return "";
   }
+}
+
+function blobToImage(blob) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(blob);
+    const img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      resolve(img);
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("QR render failed."));
+    };
+    img.src = url;
+  });
 }
 
 function paintLogo(ctx, logo, settings) {

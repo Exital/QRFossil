@@ -13,21 +13,22 @@
     "provider": "none"
   },
   "links": {
-    "example": {
-      "name": "Example",
+    "exital": {
+      "name": "Exital",
       "enabled": true,
-      "destination": "https://github.com",
+      "destination": "https://www.linkedin.com/in/tal-rozenzwieg",
       "createdAt": "2026-08-17T08:00:00Z",
+      "updatedAt": "2026-09-24T20:05:00.000Z",
       "qr": {
-        "foreground": "#1c1a16",
-        "background": "#e7e4dc",
+        "foreground": "#0A66C2",
+        "background": "#F3F8FC",
         "errorCorrection": "H",
-        "dots": "rounded",
-        "corners": "rounded",
-        "logo": "",
-        "logoSize": 0.2,
-        "size": 280,
-        "margin": 8
+        "dots": "dots",
+        "corners": "extra-rounded",
+        "logo": "/assets/logos/tal-logo.png",
+        "logoSize": 0.26,
+        "size": 360,
+        "margin": 12
       }
     }
   }
