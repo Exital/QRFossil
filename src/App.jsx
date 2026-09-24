@@ -29,7 +29,7 @@ function AppRoutes() {
       {toast && <Toast message={toast.message} kind={toast.kind} />}
       <AuthModal open={authModalOpen} onClose={closeAuthModal} onConnect={connectGitHub} />
       {showSetup && !onSettings && (
-        <div className="fixed bottom-gutter left-[calc(350px+30px)] z-50 max-w-sm rounded-lg border border-primary/30 bg-primary-fixed px-md py-sm text-body-sm text-on-primary-fixed shadow-card">
+        <div className="fixed bottom-gutter left-margin-mobile right-margin-mobile z-50 max-w-sm rounded-lg border border-primary/30 bg-primary-fixed px-md py-sm text-body-sm text-on-primary-fixed shadow-card lg:left-[calc(350px+30px)] lg:right-auto">
           Open Settings to set your site URL (custom domain).
         </div>
       )}

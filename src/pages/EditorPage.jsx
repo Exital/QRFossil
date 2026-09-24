@@ -155,7 +155,7 @@ export default function EditorPage() {
     return (
       <>
         <TopBar title="QR Management" />
-        <main className="flex flex-1 items-center justify-center p-gutter">
+        <main className="flex flex-1 items-center justify-center p-sm sm:p-gutter">
           <Card className="text-center">
             <p className="text-body-md text-on-surface-variant">QR code not found.</p>
             <Link to="/codes" className="mt-md inline-block text-primary hover:underline">
@@ -173,7 +173,7 @@ export default function EditorPage() {
     <>
       <TopBar title="QR Management" />
       <Banner />
-      <main className="flex-1 overflow-y-auto bg-background p-gutter lg:p-margin-desktop">
+      <main className="flex-1 overflow-y-auto bg-background p-sm sm:p-gutter lg:p-margin-desktop">
         <div className="mb-gutter flex flex-col gap-md sm:flex-row sm:items-center sm:justify-between">
           <div>
             <Breadcrumb
@@ -188,7 +188,7 @@ export default function EditorPage() {
             </h2>
           </div>
           {!isNew && existingLink && (
-            <div className="flex items-center gap-sm">
+            <div className="flex flex-wrap items-center gap-sm">
               <button
                 type="button"
                 onClick={() =>
@@ -278,7 +278,7 @@ export default function EditorPage() {
                 placeholder="q3-marketing"
               />
 
-              <p className="mb-md font-mono text-label-sm text-on-surface-variant">
+              <p className="mb-md break-all font-mono text-label-sm text-on-surface-variant">
                 Permanent URL: {qrData}
               </p>
 

@@ -35,7 +35,7 @@ export default function DocsPage() {
     <>
       <TopBar title="Docs" />
       <Banner />
-      <main className="flex-1 overflow-y-auto bg-background p-gutter lg:p-margin-desktop">
+      <main className="flex-1 overflow-y-auto bg-background p-sm sm:p-gutter lg:p-margin-desktop">
         <div className="mb-gutter max-w-3xl">
           <h2 className="text-headline-lg text-on-surface">How QRFossil works</h2>
           <p className="mt-xs text-body-sm text-on-surface-variant">

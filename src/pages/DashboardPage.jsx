@@ -18,7 +18,7 @@ export default function DashboardPage() {
     <>
       <TopBar title="Dashboard" />
       <Banner />
-      <main className="flex-1 overflow-y-auto bg-background p-gutter lg:p-margin-desktop">
+      <main className="flex-1 overflow-y-auto bg-background p-sm sm:p-gutter lg:p-margin-desktop">
         <div className="mb-gutter">
           <h2 className="text-headline-lg text-on-surface">Welcome back</h2>
           <p className="mt-xs text-body-sm text-on-surface-variant">
@@ -70,8 +70,8 @@ export default function DashboardPage() {
                 className="cursor-pointer transition-shadow hover:shadow-card-hover"
                 onClick={() => navigate(`/codes/${slug}`)}
               >
-                <div className="flex items-start gap-md">
-                  <div className="h-[160px] w-[160px] shrink-0 overflow-hidden rounded-xl border border-card bg-white p-xs">
+                <div className="flex items-start gap-sm sm:gap-md">
+                  <div className="h-[96px] w-[96px] shrink-0 overflow-hidden rounded-xl border border-card bg-white p-xs sm:h-[160px] sm:w-[160px]">
                     <QrPreview
                       data={permanentUrl(slug)}
                       qr={{ ...defaultQr(), ...(link.qr || {}), size: 320 }}
@@ -121,7 +121,7 @@ export default function DashboardPage() {
 
         <Card className="mt-gutter">
           <h3 className="text-headline-sm text-on-surface">{siteName}</h3>
-          <p className="mt-xs font-mono text-label-sm text-on-surface-variant">{baseUrl || "Configure site URL in Settings"}</p>
+          <p className="mt-xs break-all font-mono text-label-sm text-on-surface-variant">{baseUrl || "Configure site URL in Settings"}</p>
         </Card>
       </main>
     </>

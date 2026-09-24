@@ -17,7 +17,7 @@ export default function ConfirmModal({ open, title, body, action, danger, onCanc
           {title}
         </h2>
         <p className="mt-sm text-body-sm text-on-surface-variant">{body}</p>
-        <div className="mt-md flex justify-end gap-sm">
+        <div className="mt-md flex flex-wrap justify-end gap-sm">
           <button
             type="button"
             onClick={onCancel}

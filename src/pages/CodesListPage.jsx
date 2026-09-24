@@ -30,9 +30,9 @@ export default function CodesListPage() {
     <>
       <TopBar title="My QR Codes" search={search} onSearchChange={setSearch} />
       <Banner />
-      <main className="flex-1 overflow-y-auto bg-background p-gutter lg:p-margin-desktop">
-        <div className="mb-gutter flex items-center justify-between">
-          <div>
+      <main className="flex-1 overflow-y-auto bg-background p-sm sm:p-gutter lg:p-margin-desktop">
+        <div className="mb-gutter flex flex-wrap items-center justify-between gap-sm">
+          <div className="min-w-0">
             <h2 className="text-headline-lg text-on-surface">My QR Codes</h2>
             <p className="mt-xs text-body-sm text-on-surface-variant">
               {filtered.length === 1 ? "1 link" : `${filtered.length} links`}
@@ -40,7 +40,7 @@ export default function CodesListPage() {
           </div>
           <Link
             to="/codes/new"
-            className="flex items-center gap-xs rounded-lg bg-primary px-md py-sm text-on-primary shadow-sm hover:opacity-90"
+            className="flex shrink-0 items-center gap-xs rounded-lg bg-primary px-md py-sm text-on-primary shadow-sm hover:opacity-90"
           >
             <Icon name="add" size={18} />
             Create
@@ -59,8 +59,8 @@ export default function CodesListPage() {
             {filtered.map(([slug, link]) => (
               <Card key={slug} className="group transition-shadow hover:shadow-card-hover">
                 <div className="flex flex-col gap-md sm:flex-row sm:items-center sm:justify-between">
-                  <div className="flex min-w-0 flex-1 items-start gap-md">
-                    <div className="h-[160px] w-[160px] shrink-0 overflow-hidden rounded-xl border border-card bg-white p-xs">
+                  <div className="flex min-w-0 flex-1 items-start gap-sm sm:gap-md">
+                    <div className="h-[96px] w-[96px] shrink-0 overflow-hidden rounded-xl border border-card bg-white p-xs sm:h-[160px] sm:w-[160px]">
                       <QrPreview
                         data={permanentUrl(slug)}
                         qr={{ ...defaultQr(), ...(link.qr || {}), size: 320 }}

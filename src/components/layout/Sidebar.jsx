@@ -2,6 +2,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useApp } from "../../context/AppContext.jsx";
 import Icon from "../ui/Icon.jsx";
 import markSvg from "../../assets/mark.svg";
+import { useLayoutNav } from "./LayoutNavContext.jsx";
 
 export const UPSTREAM_REPO = "https://github.com/Exital/QRFossil";
 
@@ -15,23 +16,38 @@ const navItems = [
 export default function Sidebar() {
   const { siteName } = useApp();
   const navigate = useNavigate();
+  const { navOpen, closeNav } = useLayoutNav();
 
   function handleCreate() {
+    closeNav();
     navigate("/codes/new");
   }
 
   return (
-    <aside className="fixed left-0 top-0 z-50 flex h-screen w-[350px] flex-col space-y-base border-r border-outline-variant bg-surface-container-low p-md shadow-sm">
+    <aside
+      id="app-sidebar"
+      className={`fixed left-0 top-0 z-50 flex h-screen w-[min(350px,88vw)] flex-col space-y-base border-r border-outline-variant bg-surface-container-low p-md shadow-sm transition-transform duration-200 ease-out lg:w-[350px] lg:translate-x-0 ${
+        navOpen ? "translate-x-0" : "-translate-x-full"
+      }`}
+    >
       <div className="mb-lg flex items-center gap-sm">
         <img
           alt="QRFossil logo"
-          className="h-12 w-12 rounded-lg border border-outline-variant bg-surface-container-lowest shadow-sm"
+          className="h-12 w-12 shrink-0 rounded-lg border border-outline-variant bg-surface-container-lowest shadow-sm"
           src={markSvg}
         />
-        <div>
-          <h1 className="text-[25px] font-bold leading-tight text-primary">{siteName}</h1>
+        <div className="min-w-0 flex-1">
+          <h1 className="truncate text-[25px] font-bold leading-tight text-primary">{siteName}</h1>
           <p className="text-body-sm text-on-surface-variant">Self-hosted · GitHub Pages</p>
         </div>
+        <button
+          type="button"
+          onClick={closeNav}
+          className="rounded-full p-xs text-on-surface-variant hover:bg-surface-container-highest hover:text-on-surface lg:hidden"
+          aria-label="Close menu"
+        >
+          <Icon name="close" />
+        </button>
       </div>
 
       <button
@@ -43,12 +59,13 @@ export default function Sidebar() {
         Create QR Code
       </button>
 
-      <nav className="flex flex-1 flex-col gap-xs">
+      <nav className="flex flex-1 flex-col gap-xs overflow-y-auto">
         {navItems.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
             end={item.end}
+            onClick={closeNav}
             className={({ isActive }) =>
               `flex items-center gap-sm rounded-lg px-sm py-xs transition-all duration-200 ease-in-out active:scale-[0.98] ${
                 isActive

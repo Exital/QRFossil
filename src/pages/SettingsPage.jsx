@@ -42,7 +42,7 @@ export default function SettingsPage() {
     <>
       <TopBar title="Settings" />
       <Banner />
-      <main className="flex-1 overflow-y-auto bg-background p-gutter lg:p-margin-desktop">
+      <main className="flex-1 overflow-y-auto bg-background p-sm sm:p-gutter lg:p-margin-desktop">
         <div className="mb-gutter">
           <h2 className="text-headline-lg text-on-surface">Site settings</h2>
           <p className="mt-xs text-body-sm text-on-surface-variant">

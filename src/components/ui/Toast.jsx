@@ -9,7 +9,7 @@ export default function Toast({ message, kind = "info" }) {
 
   return (
     <div
-      className={`toast-enter fixed bottom-gutter right-gutter z-[100] max-w-sm rounded-lg border px-md py-sm text-body-sm shadow-card ${colors[kind] || colors.info}`}
+      className={`toast-enter fixed bottom-gutter left-margin-mobile right-margin-mobile z-[100] max-w-sm rounded-lg border px-md py-sm text-body-sm shadow-card sm:left-auto sm:right-gutter ${colors[kind] || colors.info}`}
       role="status"
     >
       {message}
