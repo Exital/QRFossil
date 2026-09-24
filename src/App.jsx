@@ -1,4 +1,4 @@
-import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
+import { HashRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import AuthModal from "./components/modals/AuthModal.jsx";
 import Layout from "./components/layout/Layout.jsx";
 import Toast from "./components/ui/Toast.jsx";
@@ -11,6 +11,8 @@ import SettingsPage from "./pages/SettingsPage.jsx";
 
 function AppRoutes() {
   const { toast, showSetup, authModalOpen, closeAuthModal, connectGitHub } = useApp();
+  const { pathname } = useLocation();
+  const onSettings = pathname === "/settings" || pathname.endsWith("/settings");
 
   return (
     <>
@@ -26,9 +28,9 @@ function AppRoutes() {
       </Routes>
       {toast && <Toast message={toast.message} kind={toast.kind} />}
       <AuthModal open={authModalOpen} onClose={closeAuthModal} onConnect={connectGitHub} />
-      {showSetup && (
+      {showSetup && !onSettings && (
         <div className="fixed bottom-gutter left-[calc(350px+30px)] z-50 max-w-sm rounded-lg border border-primary/30 bg-primary-fixed px-md py-sm text-body-sm text-on-primary-fixed shadow-card">
-          Finish setup in Settings so QR URLs resolve correctly.
+          Open Settings to set your site URL (custom domain).
         </div>
       )}
     </>

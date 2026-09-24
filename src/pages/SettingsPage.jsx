@@ -5,7 +5,7 @@ import Banner, { Card } from "../components/ui/Banner.jsx";
 import { inferredSetup, validateEnvironment } from "../lib/setup.js";
 
 export default function SettingsPage() {
-  const { config, saveSetup, showSetup, siteName, requestWriteAccess } = useApp();
+  const { config, saveSetup, showSetup, requestWriteAccess } = useApp();
   const inferred = inferredSetup(config || {});
   const [setup, setSetup] = useState(inferred);
   const [checks, setChecks] = useState([]);
@@ -16,8 +16,8 @@ export default function SettingsPage() {
   }, [config]);
 
   useEffect(() => {
-    validateEnvironment().then(setChecks);
-  }, []);
+    validateEnvironment(config).then(setChecks);
+  }, [config]);
 
   async function handleSave(e) {
     e.preventDefault();
@@ -53,9 +53,10 @@ export default function SettingsPage() {
 
         {showSetup && (
           <Card className="mb-gutter border-primary/30 bg-primary/5">
-            <h3 className="text-headline-sm text-on-surface">Welcome to {siteName}</h3>
+            <h3 className="text-headline-sm text-on-surface">Finish setup</h3>
             <p className="mt-xs text-body-sm text-on-surface-variant">
-              Finish setup so printed QR codes use the correct permanent URL.
+              This site isn’t on a standard <span className="font-mono">*.github.io</span> URL, so Site URL /
+              GitHub username / repository couldn’t be inferred. Set them below and save once.
             </p>
           </Card>
         )}

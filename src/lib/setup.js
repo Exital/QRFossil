@@ -10,9 +10,17 @@ function isUnsetBaseUrl(baseUrl) {
   return false;
 }
 
+/** True when the live page URL is enough to know site URL + GitHub owner/repo. */
+export function canInferSite() {
+  if (isLocalDev()) return true;
+  const { owner, repo } = inferRepo();
+  return Boolean(owner && repo);
+}
+
 export function needsSetup(config) {
-  if (!config || !config.site) return true;
-  return isUnsetBaseUrl(config.site.baseUrl);
+  if (config?.site && !isUnsetBaseUrl(config.site.baseUrl)) return false;
+  // Standard github.io forks (and local preview) need no manual setup.
+  return !canInferSite();
 }
 
 export function inferredSetup(config) {
@@ -30,11 +38,11 @@ export function inferredSetup(config) {
   };
 }
 
-export async function validateEnvironment() {
-  const base = getPublicBase().replace(/\/+$/, "");
+export async function validateEnvironment(config) {
+  const pageBase = getPublicBase().replace(/\/+$/, "");
   const checks = [
-    { id: "config", label: "Configuration found", url: `${base}/data/qrfossil.json` },
-    { id: "redirects", label: "Redirect manifest reachable", url: `${base}/data/redirects.json` },
+    { id: "config", label: "Configuration found", url: `${pageBase}/data/qrfossil.json` },
+    { id: "redirects", label: "Redirect manifest reachable", url: `${pageBase}/data/redirects.json` },
   ];
   const results = [];
   for (const check of checks) {
@@ -45,12 +53,16 @@ export async function validateEnvironment() {
       results.push({ ...check, ok: false });
     }
   }
-  const expected = base;
-  const actual = getPublicBase();
+  const savedBase = String(config?.site?.baseUrl || "")
+    .trim()
+    .replace(/\/+$/, "");
+  const effectiveBase = !isUnsetBaseUrl(savedBase) ? savedBase : canInferSite() ? pageBase : "";
   results.push({
     id: "baseUrl",
-    label: "Site URL matches this page",
-    ok: actual.replace(/\/+$/, "") === expected.replace(/\/+$/, ""),
+    label: !isUnsetBaseUrl(savedBase)
+      ? "Saved site URL matches this page"
+      : "Site URL inferred from this page",
+    ok: Boolean(effectiveBase) && effectiveBase === pageBase,
   });
   results.push({
     id: "pages",
