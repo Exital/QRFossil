@@ -39,8 +39,8 @@ export default function QrPreview({ data, qr, logoUrl, className = "" }) {
   }, [data, qrKey, qrSettings, logoUrl]);
 
   return (
-    <div className={`relative ${className}`} aria-label="QR code preview">
-      <div ref={mountRef} className="h-full w-full" />
+    <div className={`relative flex items-center justify-center ${className}`} aria-label="QR code preview">
+      <div ref={mountRef} className="flex h-full w-full items-center justify-center overflow-hidden" />
     </div>
   );
 }

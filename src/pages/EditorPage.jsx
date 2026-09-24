@@ -474,8 +474,8 @@ export default function EditorPage() {
               <div className="mb-md flex w-full items-center justify-between">
                 <h3 className="text-headline-sm text-on-surface">Preview</h3>
               </div>
-              <div className="relative mb-lg flex h-72 w-72 shrink-0 items-center justify-center rounded-2xl border border-card bg-white p-md shadow-[0_4px_12px_rgba(15,23,42,0.05)]">
-                <QrPreview data={qrData} qr={form.qr} logoUrl={logoPreviewSrc} className="h-full w-full" />
+              <div className="relative mb-lg mx-auto flex aspect-square w-full max-w-[288px] shrink-0 items-center justify-center rounded-2xl border border-card bg-white p-md shadow-[0_4px_12px_rgba(15,23,42,0.05)]">
+                <QrPreview data={qrData} qr={form.qr} logoUrl={logoPreviewSrc} className="flex h-full w-full items-center justify-center" />
               </div>
               <DownloadButtons
                 data={qrData}

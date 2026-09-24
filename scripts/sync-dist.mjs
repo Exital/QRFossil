@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /** Copy Vite build output into repo root for GitHub Pages (root deploy). */
-import { cpSync, existsSync, mkdirSync, readdirSync, rmSync } from "node:fs";
+import { cpSync, existsSync, readdirSync, rmSync } from "node:fs";
 import { join } from "node:path";
 
 const root = new URL("..", import.meta.url).pathname;
@@ -22,4 +22,11 @@ if (existsSync(assetsSrc)) {
   cpSync(assetsSrc, assetsDest, { recursive: true });
 }
 
-console.log("Synced dist → root (index.html + app-assets/)");
+// Public root assets Vite copies into dist/ (logo, etc.) — keep them next to index.html.
+for (const name of readdirSync(dist)) {
+  if (name === "index.html" || name === "app-assets") continue;
+  const src = join(dist, name);
+  cpSync(src, join(root, name), { recursive: true });
+}
+
+console.log("Synced dist → root (index.html + app-assets/ + public assets)");

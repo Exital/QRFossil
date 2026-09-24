@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useApp } from "../../context/AppContext.jsx";
 import Icon from "../ui/Icon.jsx";
 
@@ -9,14 +10,14 @@ export default function TopBar({ title, search, onSearchChange }) {
   }
 
   return (
-    <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between border-b border-outline-variant bg-surface-container-lowest px-margin-mobile dark:border-outline dark:bg-background lg:px-margin-desktop">
+    <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between border-b border-outline-variant bg-surface-container-lowest px-margin-mobile lg:px-margin-desktop">
       <div className="flex items-center gap-md">
         <span className="text-headline-md font-bold tracking-tight text-on-surface">{title}</span>
         {onSearchChange && (
           <div className="relative hidden items-center rounded-lg transition-all focus-within:ring-2 focus-within:ring-primary lg:flex">
             <Icon name="search" size={20} className="pointer-events-none absolute left-sm text-on-surface-variant" />
             <input
-              className="w-64 rounded-lg border-none bg-surface-container-low py-xs pl-xl pr-sm text-body-sm placeholder:text-outline focus:ring-0"
+              className="w-64 rounded-lg border-none bg-surface-container-low py-xs pl-xl pr-sm text-body-sm text-on-surface placeholder:text-outline focus:ring-0"
               placeholder="Search codes..."
               type="search"
               value={search || ""}
@@ -27,9 +28,9 @@ export default function TopBar({ title, search, onSearchChange }) {
       </div>
 
       <div className="hidden items-center gap-md md:flex">
-        <a className="text-on-surface-variant transition-opacity hover:text-primary hover:opacity-80" href="#">
+        <Link className="text-on-surface-variant transition-opacity hover:text-primary hover:opacity-80" to="/docs">
           Docs
-        </a>
+        </Link>
         <span className="text-on-surface-variant">·</span>
         <span className="font-mono text-label-sm text-on-surface-variant">
           {isLocalDev ? "local preview" : repo.owner && repo.repo ? `${repo.owner}/${repo.repo}` : "read-only"}
@@ -39,7 +40,7 @@ export default function TopBar({ title, search, onSearchChange }) {
       <div className="flex items-center gap-sm">
         <span
           className={`hidden rounded-full px-sm py-xs text-label-sm sm:inline ${
-            canEdit ? "bg-primary/10 text-primary" : "bg-surface-container text-on-surface-variant"
+            canEdit ? "bg-primary/15 text-primary" : "bg-surface-container text-on-surface-variant"
           }`}
         >
           {canEdit ? (isLocalDev ? "Local editor" : "Editor") : "Read-only"}

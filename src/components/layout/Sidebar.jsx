@@ -1,10 +1,14 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useApp } from "../../context/AppContext.jsx";
 import Icon from "../ui/Icon.jsx";
+import markSvg from "../../assets/mark.svg";
+
+export const UPSTREAM_REPO = "https://github.com/Exital/QRFossil";
 
 const navItems = [
   { to: "/", icon: "dashboard", label: "Dashboard", end: true },
   { to: "/codes", icon: "qr_code_2", label: "My QR Codes" },
+  { to: "/docs", icon: "menu_book", label: "Docs" },
   { to: "/settings", icon: "settings", label: "Settings" },
 ];
 
@@ -17,17 +21,15 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="fixed left-0 top-0 z-50 flex h-screen w-[280px] flex-col space-y-base border-r border-outline-variant bg-surface-container-low p-md shadow-sm dark:border-outline dark:bg-surface-dim">
+    <aside className="fixed left-0 top-0 z-50 flex h-screen w-[280px] flex-col space-y-base border-r border-outline-variant bg-surface-container-low p-md shadow-sm">
       <div className="mb-lg flex items-center gap-sm">
         <img
           alt="QRFossil logo"
-          className="h-10 w-10 rounded-lg border border-outline-variant shadow-sm"
-          src={`${import.meta.env.BASE_URL}mark.svg`}
+          className="h-10 w-10 rounded-lg border border-outline-variant bg-surface-container-lowest shadow-sm"
+          src={markSvg}
         />
         <div>
-          <h1 className="text-[20px] font-bold leading-tight text-primary dark:text-primary-fixed">
-            {siteName}
-          </h1>
+          <h1 className="text-[20px] font-bold leading-tight text-primary">{siteName}</h1>
           <p className="text-body-sm text-on-surface-variant">Self-hosted · GitHub Pages</p>
         </div>
       </div>
@@ -67,13 +69,13 @@ export default function Sidebar() {
 
       <div className="mt-auto flex flex-col gap-xs border-t border-outline-variant pt-md">
         <a
-          href="https://github.com"
+          href={UPSTREAM_REPO}
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-sm rounded-lg px-sm py-xs text-secondary transition-colors duration-200 hover:bg-surface-container-highest hover:text-primary active:scale-[0.98]"
         >
-          <Icon name="help" />
-          Help Center
+          <Icon name="code" />
+          GitHub
         </a>
       </div>
     </aside>

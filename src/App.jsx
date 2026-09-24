@@ -5,6 +5,7 @@ import Toast from "./components/ui/Toast.jsx";
 import { AppProvider, useApp } from "./context/AppContext.jsx";
 import CodesListPage from "./pages/CodesListPage.jsx";
 import DashboardPage from "./pages/DashboardPage.jsx";
+import DocsPage from "./pages/DocsPage.jsx";
 import EditorPage from "./pages/EditorPage.jsx";
 import SettingsPage from "./pages/SettingsPage.jsx";
 
@@ -18,6 +19,7 @@ function AppRoutes() {
           <Route index element={<DashboardPage />} />
           <Route path="codes" element={<CodesListPage />} />
           <Route path="codes/:slug" element={<EditorPage />} />
+          <Route path="docs" element={<DocsPage />} />
           <Route path="settings" element={<SettingsPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />

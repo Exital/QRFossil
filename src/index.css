@@ -2,6 +2,75 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --qf-background: #f7f9fb;
+  --qf-on-background: #191c1e;
+  --qf-surface: #f7f9fb;
+  --qf-on-surface: #191c1e;
+  --qf-on-surface-variant: #464555;
+  --qf-surface-container-lowest: #ffffff;
+  --qf-surface-container-low: #f2f4f6;
+  --qf-surface-container: #eceef0;
+  --qf-surface-container-high: #e6e8ea;
+  --qf-surface-container-highest: #e0e3e5;
+  --qf-surface-dim: #d8dadc;
+  --qf-outline: #777587;
+  --qf-outline-variant: #c7c4d8;
+  --qf-card: #e2e8f0;
+  --qf-primary: #3525cd;
+  --qf-on-primary: #ffffff;
+  --qf-primary-container: #4f46e5;
+  --qf-on-primary-container: #dad7ff;
+  --qf-primary-fixed: #e2dfff;
+  --qf-secondary: #565e74;
+  --qf-inverse-surface: #2d3133;
+  --qf-inverse-on-surface: #eff1f3;
+  --qf-error: #ba1a1a;
+  --qf-error-container: #ffdad6;
+  --qf-on-error-container: #93000a;
+  --qf-active-bg: #e8f5e9;
+  --qf-active-text: #2e7d32;
+  --qf-active-border: #c8e6c9;
+  --qf-disabled-bg: #fef3e2;
+  --qf-disabled-text: #b45309;
+  --qf-disabled-border: #fde68a;
+}
+
+html.dark {
+  color-scheme: dark;
+  --qf-background: #0f1114;
+  --qf-on-background: #e3e5e8;
+  --qf-surface: #0f1114;
+  --qf-on-surface: #e3e5e8;
+  --qf-on-surface-variant: #c7c4d8;
+  --qf-surface-container-lowest: #1a1d21;
+  --qf-surface-container-low: #15181c;
+  --qf-surface-container: #1e2227;
+  --qf-surface-container-high: #282c32;
+  --qf-surface-container-highest: #33383f;
+  --qf-surface-dim: #0b0d10;
+  --qf-outline: #918fa0;
+  --qf-outline-variant: #464555;
+  --qf-card: #3a3f48;
+  --qf-primary: #c3c0ff;
+  --qf-on-primary: #1600a0;
+  --qf-primary-container: #4f46e5;
+  --qf-on-primary-container: #e2dfff;
+  --qf-primary-fixed: #c3c0ff;
+  --qf-secondary: #bec6e0;
+  --qf-inverse-surface: #e3e5e8;
+  --qf-inverse-on-surface: #2d3133;
+  --qf-error: #ffb4ab;
+  --qf-error-container: #93000a;
+  --qf-on-error-container: #ffdad6;
+  --qf-active-bg: #1b3a24;
+  --qf-active-text: #81c784;
+  --qf-active-border: #2e7d32;
+  --qf-disabled-bg: #3a2e1a;
+  --qf-disabled-text: #fbbf24;
+  --qf-disabled-border: #92400e;
+}
+
 @layer base {
   html {
     @apply h-full;
@@ -13,6 +82,12 @@
 
   #root {
     @apply h-full;
+  }
+
+  html.dark input,
+  html.dark select,
+  html.dark textarea {
+    color-scheme: dark;
   }
 }
 

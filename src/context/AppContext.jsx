@@ -63,9 +63,11 @@ export function AppProvider({ children }) {
   const [toast, setToast] = useState(null);
   const [darkMode, setDarkMode] = useState(() => {
     try {
-      return localStorage.getItem("qrfossil.dark") === "1";
+      const stored = localStorage.getItem("qrfossil.dark");
+      if (stored === null) return true;
+      return stored === "1";
     } catch {
-      return false;
+      return true;
     }
   });
   const toastTimer = useRef(null);

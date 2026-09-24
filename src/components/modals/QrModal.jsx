@@ -7,16 +7,16 @@ export default function QrModal({ open, link, slug, qrData, logoUrl, onClose }) 
   const [format, setFormat] = useState("svg");
   if (!open || !link) return null;
 
-  const qr = { ...defaultQr(), ...(link.qr || {}) };
+  const qr = { ...defaultQr(), ...(link.qr || {}), size: 280 };
 
   return (
     <div
-      className="fixed inset-0 z-[80] flex items-center justify-center bg-inverse-surface/60 p-md backdrop-blur-sm"
+      className="fixed inset-0 z-[80] flex items-center justify-center bg-inverse-surface/70 p-md backdrop-blur-sm"
       onClick={onClose}
       role="presentation"
     >
       <div
-        className="w-full max-w-sm rounded-xl border border-outline-variant bg-surface-container-lowest p-md shadow-card"
+        className="w-full max-w-sm rounded-xl border border-outline-variant bg-surface-container-lowest p-md shadow-card dark:border-outline dark:bg-surface-container"
         role="dialog"
         aria-labelledby="qr-modal-title"
         onClick={(e) => e.stopPropagation()}
@@ -25,13 +25,17 @@ export default function QrModal({ open, link, slug, qrData, logoUrl, onClose }) 
           <h2 id="qr-modal-title" className="text-headline-sm text-on-surface">
             {link.name || slug}
           </h2>
-          <button type="button" onClick={onClose} className="rounded-full p-xs hover:bg-surface-container-low">
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full p-xs text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface"
+          >
             <Icon name="close" />
           </button>
         </div>
         <p className="mb-md break-all font-mono text-label-sm text-on-surface-variant">{qrData}</p>
-        <div className="mb-md flex h-64 items-center justify-center rounded-xl border border-card bg-white p-md">
-          <QrPreview data={qrData} qr={qr} logoUrl={logoUrl} className="flex h-full w-full items-center justify-center" />
+        <div className="mx-auto mb-md flex aspect-square w-full max-w-[280px] items-center justify-center overflow-hidden rounded-xl border border-card bg-white p-4 dark:border-outline-variant">
+          <QrPreview data={qrData} qr={qr} logoUrl={logoUrl} className="h-full w-full" />
         </div>
         <DownloadButtons
           data={qrData}

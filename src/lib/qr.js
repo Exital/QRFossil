@@ -161,11 +161,14 @@ export async function renderQr(container, data, qr, imageUrl, { fit = false } = 
   if (!container) return null;
   const canvas = await compositeQr(data, qr, imageUrl);
   if (fit) {
+    // Keep the QR square and centered inside the preview frame.
     canvas.style.display = "block";
     canvas.style.width = "100%";
     canvas.style.height = "100%";
     canvas.style.maxWidth = "100%";
     canvas.style.maxHeight = "100%";
+    canvas.style.objectFit = "contain";
+    canvas.style.margin = "0 auto";
   }
   container.replaceChildren(canvas);
   return canvas;
