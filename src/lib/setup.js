@@ -1,19 +1,31 @@
-import { getPublicBase, inferBaseUrl, inferRepo, setText, show } from "./utils.js";
+import { getPublicBase, inferBaseUrl, inferRepo, isLocalDev, setText, show } from "./utils.js";
+
+function isUnsetBaseUrl(baseUrl) {
+  const value = String(baseUrl || "").trim();
+  if (!value) return true;
+  // Localhost in committed config must not count as “configured” on a real Pages fork.
+  if (!isLocalDev() && /^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?\/?$/i.test(value)) {
+    return true;
+  }
+  return false;
+}
 
 export function needsSetup(config) {
-  const baseUrl = config && config.site && config.site.baseUrl;
-  return !String(baseUrl || "").trim();
+  if (!config || !config.site) return true;
+  return isUnsetBaseUrl(config.site.baseUrl);
 }
 
 export function inferredSetup(config) {
   const repo = inferRepo();
   const stored = (config && config.site && config.site.github) || {};
-  const owner = stored.owner || repo.owner;
-  const name = stored.repo || repo.repo;
+  const owner = String(stored.owner || "").trim() || repo.owner;
+  const name = String(stored.repo || "").trim() || repo.repo;
+  const storedBase = String((config && config.site && config.site.baseUrl) || "").trim();
   return {
     owner,
     repo: name,
-    baseUrl: (config && config.site && config.site.baseUrl) || inferBaseUrl(),
+    // Prefill from the live page; never keep a stale localhost URL on Pages.
+    baseUrl: isUnsetBaseUrl(storedBase) ? inferBaseUrl() : storedBase,
     siteName: (config && config.site && config.site.name) || "QRFossil",
   };
 }

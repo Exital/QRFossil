@@ -3,10 +3,10 @@
   "appVersion": "0.1.0",
   "site": {
     "name": "QRFossil",
-    "baseUrl": "http://127.0.0.1:8765",
+    "baseUrl": "",
     "github": {
-      "owner": "tal_username",
-      "repo": "qrfossil"
+      "owner": "",
+      "repo": ""
     }
   },
   "analytics": {

@@ -494,7 +494,8 @@ export function AppProvider({ children }) {
 
   const siteName = config?.site?.name || "QRFossil";
   const baseUrl = config?.site?.baseUrl || getPublicBase();
-  const showSetup = needsSetup(config) && !setupDismissed;
+  // Local preview uses inferred origin; only real hosts need the setup nudge.
+  const showSetup = needsSetup(config) && !setupDismissed && !isLocalDev();
 
   const value = {
     config,
